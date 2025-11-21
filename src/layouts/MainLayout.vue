@@ -94,6 +94,13 @@
             <q-item-section>Datos de Transferencia</q-item-section>
           </q-item>
 
+          <q-item clickable v-ripple to="/map" exact>
+            <q-item-section avatar>
+              <q-icon name="map" />
+            </q-item-section>
+            <q-item-section>Mapa</q-item-section>
+          </q-item>
+
           <!-- <q-item-label header class="text-grey-4 q-py-md"
             >CONFIGURACIÓN</q-item-label
           >
@@ -145,6 +152,7 @@
           icon="credit_card"
           :to="{ name: 'profiles' }"
         />
+        <q-route-tab name="charts" icon="map" to="map" />
       </q-tabs>
     </q-footer>
     <PriceDialog />

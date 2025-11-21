@@ -62,7 +62,13 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      // Expose environment variables to the client code.
+      env: {
+        FILE_URL: process.env.FILE_URL,
+        API_URL: process.env.API_URL,
+        API_URL_PROD: process.env.API_URL_PROD,
+        FILE_URL_PROD: process.env.FILE_URL_PROD,
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
