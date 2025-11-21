@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AtDolar</string>
+    <string name="title_activity_main">AtDolar</string>
+    <string name="package_name">com.atcode.tudolarbot</string>
+    <string name="custom_url_scheme">com.atcode.tudolarbot</string>
+</resources>

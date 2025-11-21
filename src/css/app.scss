@@ -1,0 +1,335 @@
+// app global css in SCSS form
+
+body {
+  background-color: $dark;
+}
+
+label.custom-label {
+  margin-bottom: 8px !important;
+}
+body.body--dark {
+  background: #000000;
+}
+
+// Cuando el teclado está abierto en móvil (class kb-open en <body>)
+body.kb-open .with-footer-padding {
+  /* Añade espacio adicional igual a la altura reportada del teclado para que el contenido se pueda seguir viendo al hacer scroll */
+  padding-bottom: calc(68px + var(--kb-height, 0px));
+}
+body.kb-open .footer-container {
+  /* Aseguramos que el footer quede fijo visualmente al frente */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.bg-custom-green {
+  background: linear-gradient(to bottom right, #1fdb9c, #0d9488);
+}
+
+.gradient-green {
+  background: linear-gradient(to bottom right, #1fdb9c, #0d9488);
+}
+
+.gradient-purple {
+  background: linear-gradient(to bottom right, #a855f7, #4f46e5);
+}
+
+.br-10 {
+  border-radius: 10px;
+}
+
+.container-x {
+  max-width: 100%;
+  padding-left: 4%;
+  padding-right: 4%;
+  height: calc(100vh - 140px);
+}
+
+.bg-delete {
+  background: #7f1d1d;
+}
+
+.br-btn {
+  border-radius: 10px;
+}
+
+.btn-primary-custom {
+  color: rgb(192 132 252);
+  border: 1px solid rgb(88 28 135);
+  border-radius: 10px;
+  background-color: #9532f227;
+}
+
+// Cifras rápidas
+
+.quick-amounts-container {
+  position: relative;
+  padding: 4px 0 0 0;
+  margin-bottom: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+  min-width: 0;
+}
+
+.quick-amounts-grid.two-rows-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.small-quick-grid {
+  width: 100%;
+  max-width: 100%;
+}
+
+.small-quick-btn {
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 32px !important;
+  font-size: 14px !important;
+  padding: 0 4px !important;
+  border-radius: 10px !important;
+  .q-btn__content {
+    min-height: unset !important;
+  }
+}
+
+// Botones de acción
+
+.swap-btn-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0;
+}
+// Contenedor principal
+.converter-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.padding-x {
+  padding: 0 1.2rem;
+}
+
+.converter-card {
+  width: 90%;
+  max-width: 400px;
+  background-color: $accent;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 10px 4px;
+}
+
+.converter-toggle {
+  padding: 12px;
+}
+
+.converter-toggle-button {
+  font-weight: 600;
+  padding: 8px 1.5rem;
+  border: 2px solid;
+  color: #fff;
+  min-width: 180px;
+}
+
+.converter-inputs {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+
+  .q-field__input {
+    padding: 0;
+    height: 0;
+    min-height: 40px !important;
+    line-height: 40px !important;
+  }
+}
+
+.swap-float-wrap {
+  position: relative;
+}
+
+.swap-btn-float {
+  z-index: 2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  .btn-switch {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+.converter-input-group {
+  width: 100%;
+}
+
+.copy-icon {
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #fff !important;
+  }
+}
+
+.quick-amount-btn {
+  min-width: 70px !important;
+  height: 36px !important;
+  font-size: 14px !important;
+}
+
+.mode-selector {
+  .q-btn-toggle {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+}
+
+.input-badge,
+.result-badge {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.input-mode-badge,
+.result-mode-badge {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.quick-amounts-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  width: 100%;
+  max-width: 400px;
+}
+
+@media (max-width: 480px) {
+  .quick-amounts-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+
+.btn-toggle-switch {
+  border: 1px solid #fff;
+  box-shadow: 0px 2px 25px rgb(2, 6, 23, 1);
+}
+
+.input-mode-badge {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.mode-toggle-small {
+  .q-btn-toggle {
+    border-radius: 16px;
+    overflow: hidden;
+    height: 28px;
+  }
+
+  .q-btn {
+    min-width: 32px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+    padding: 0 8px !important;
+  }
+}
+
+.converter-result-group {
+  margin: 8px 0;
+  padding: 24px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid $primary;
+}
+
+.result-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+
+.result-value {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.result-avatar {
+  display: flex;
+  align-items: center;
+}
+
+/* Driver.js dark theme overrides */
+.tour-popover-dark {
+  background: #0f1217 !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+  border-radius: 12px !important;
+}
+.tour-popover-dark .driver-popover-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff !important;
+  letter-spacing: 0.2px;
+}
+.tour-popover-dark .driver-popover-description {
+  font-size: 12.5px;
+  line-height: 1.2;
+  color: #cbd5e1 !important;
+  margin-top: 4px;
+  font-weight: 400;
+}
+/* Remove any inherited text-shadow from library defaults */
+.tour-popover-dark,
+.tour-popover-dark .driver-popover-title,
+.tour-popover-dark .driver-popover-description,
+.tour-popover-dark button {
+  text-shadow: none !important;
+}
+.tour-popover-dark .driver-popover-progress-text {
+  color: #f1f1f1 !important;
+  font-size: 11px;
+}
+.tour-popover-dark .driver-popover-close-btn {
+  color: #f1f1f1 !important;
+}
+.tour-popover-dark button {
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  padding: 4px 14px !important;
+  border: none !important;
+  font-weight: 500;
+  box-shadow: none !important;
+}
+.tour-popover-dark button.driver-popover-next-btn {
+  background: #1d4ed8 !important;
+  color: #fff !important;
+}
+.tour-popover-dark button.driver-popover-prev-btn {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+.tour-popover-dark button.driver-popover-done-btn {
+  background: #15803d !important;
+  color: #fff !important;
+}

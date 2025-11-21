@@ -1,0 +1,12 @@
+{
+  "appId": "com.atcode.tudolarbot",
+  "appName": "AtDolar",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "Keyboard": { "resize": "none" }
+  }
+}
