@@ -24,7 +24,7 @@ import L from 'leaflet';
 import type * as LeafletNS from 'leaflet';
 
 type MarkerInput = {
-  id?: string | number;
+  id?: number;
   lat: number;
   lng: number;
   popup?: string;
@@ -38,7 +38,7 @@ const props = defineProps({
   // Map view
   center: {
     type: Array as unknown as () => [number, number],
-    default: () => [-34.6037, -58.3816], // Buenos Aires as a sensible default
+    default: () => [9.0377377, -69.736974],
   },
   zoom: { type: Number, default: 13 },
   minZoom: { type: Number, default: 1 },
@@ -71,7 +71,7 @@ const props = defineProps({
   fitPadding: { type: Number, default: 20 },
 
   // Sizing
-  height: { type: String, default: '400px' }, // works in pages, modals, chats
+  height: { type: String, default: '400px' },
   width: { type: String, default: '100%' },
   borderRadius: { type: String, default: '8px' },
 });
@@ -173,7 +173,8 @@ function syncMarkers() {
   clearMarkers();
 
   for (const m of props.markers) {
-    const id = m.id ?? `${m.lat},${m.lng},${Math.random().toString(36).slice(2, 8)}`;
+    const id =
+      m.id ?? `${m.lat},${m.lng},${Math.random().toString(36).slice(2, 8)}`;
     const icon = m.iconUrl
       ? L.icon({
           iconUrl: m.iconUrl,
@@ -219,7 +220,9 @@ defineExpose({
   fitToMarkers: fitToAllMarkers,
   addMarker: (marker: MarkerInput) => {
     if (!markersLayer || !L) return;
-    const id = marker.id ?? `${marker.lat},${marker.lng},${Math.random().toString(36).slice(2, 8)}`;
+    const id =
+      marker.id ??
+      `${marker.lat},${marker.lng},${Math.random().toString(36).slice(2, 8)}`;
     const icon = marker.iconUrl
       ? L.icon({
           iconUrl: marker.iconUrl,
@@ -243,7 +246,7 @@ watch(
   ([lat, lng, zoom]) => {
     if (!map || syncingView) return;
     map.setView([lat, lng] as LeafletNS.LatLngExpression, zoom);
-  },
+  }
 );
 
 // Reactivity: markers array
@@ -255,7 +258,7 @@ watch(
       fitToAllMarkers();
     }
   },
-  { deep: true },
+  { deep: true }
 );
 
 onMounted(() => {

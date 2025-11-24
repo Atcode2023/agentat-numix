@@ -175,12 +175,10 @@ const { isDarkMode } = storeToRefs(useDark());
 
 const leftDrawerOpen = ref(false);
 const notificationsOpen = ref(false);
-// Active tab: solo 'home' o 'payments'; otras rutas quedan sin selección
 const activeTab = ref('');
 const router = useRouter();
 const route = useRoute();
 
-// Pan navigation state & helpers
 const dragX = ref(0);
 const transitionEnabled = ref(true);
 const orderedTabs = ['home', 'sales', 'payments'];
