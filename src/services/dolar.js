@@ -3,7 +3,7 @@ import { handleMessages } from './notify';
 
 export const getDolar = async () => {
   try {
-    const data = await api.get('https://dolar.atcode23.com/api/dolar/today');
+    const data = await api.get('https://apidolar.atcode.dev/api/dolar/today');
 
     const dolar = data.data.bcv_today || {};
     localStorage.setItem('dolar', JSON.stringify(dolar));
@@ -38,7 +38,7 @@ export const getHistorial = async (from, to, perPage = 999) => {
     const params = { per_page: perPage };
     if (from) params.from = from; // formato esperado: YYYY-MM-DD
     if (to) params.to = to;
-    const data = await api.get('https://dolar.atcode23.com/api/dolar/history', {
+    const data = await api.get('https://apidolar.atcode.dev/api/prices', {
       params,
     });
     return data.data;

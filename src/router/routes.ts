@@ -10,9 +10,26 @@ const routes: RouteRecordRaw[] = [
       { path: 'list', component: () => import('pages/List-table.vue') },
       { path: 'records', component: () => import('pages/Records-table.vue') },
       { path: 'chat', component: () => import('pages/chat/Chat-Page.vue') },
-      { path: 'profiles', name: 'profiles', component: () => import('pages/Profiles-Page.vue') },
-      { path: 'history-charts', name: 'history-charts', component: () => import('pages/History-Charts.vue') },
-      { path: 'sales', name: 'sales', component: () => import('pages/Sales-Page.vue') },
+      {
+        path: 'profiles',
+        name: 'profiles',
+        component: () => import('pages/Profiles-Page.vue'),
+      },
+      {
+        path: 'history-charts',
+        name: 'history-charts',
+        component: () => import('pages/History-Charts.vue'),
+      },
+      {
+        path: 'sales',
+        name: 'sales',
+        component: () => import('pages/Sales-Page.vue'),
+      },
+      {
+        path: 'map',
+        name: 'maps',
+        component: () => import('pages/Map-Page.vue'),
+      },
     ],
   },
 
