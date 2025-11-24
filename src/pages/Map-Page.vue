@@ -15,6 +15,7 @@
     <div class="col full-width q-pa-none relative-position" id="map-section">
       <LeafletMap
         class="absolute-full"
+        style="height: 100vh"
         :center="[9.0377377, -69.736974]"
         :zoom="12"
         :scaleControl="true"

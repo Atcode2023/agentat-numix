@@ -7,7 +7,7 @@ export const getShops = async (categoryId: number | null): Promise<Shop[]> => {
   try {
     console.log('Fetching shops with categoryId:', categoryId);
     const { data } = await api.get(
-      `${apiUrl}/shops?categoryId=${categoryId || ''}`
+      `${apiUrl}/shops?category_id=${categoryId || ''}`
     );
 
     return data.data.data as Shop[];
