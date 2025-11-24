@@ -26,7 +26,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Sales-Page.vue'),
       },
       {
-        path: 'map',
+        path: 'maps',
         name: 'maps',
         component: () => import('pages/Map-Page.vue'),
       },

@@ -24,7 +24,7 @@ import L from 'leaflet';
 import type * as LeafletNS from 'leaflet';
 
 type MarkerInput = {
-  id?: number;
+  id?: string | number;
   lat: number;
   lng: number;
   popup?: string;
@@ -99,7 +99,15 @@ const wrapperStyle = computed(() => ({
 let resizeObserver: ResizeObserver | null = null;
 let syncingView = false;
 
-// Fix default marker icon paths in bundlers
+// Default marker icon using the custom asset provided by the user
+const customMarkerUrl = '/icons/marcador-de-posicion.png';
+const defaultMarkerIcon = L.icon({
+  iconUrl: customMarkerUrl,
+  iconRetinaUrl: customMarkerUrl,
+  iconSize: [56, 56],
+  iconAnchor: [28, 56],
+  popupAnchor: [0, -48],
+});
 
 function createMap() {
   if (!mapEl.value) return;
@@ -181,10 +189,12 @@ function syncMarkers() {
           iconSize: m.iconSize,
           iconAnchor: m.iconAnchor,
         })
-      : undefined;
+      : defaultMarkerIcon;
 
-    const markerOptions: LeafletNS.MarkerOptions = { draggable: !!m.draggable };
-    if (icon) markerOptions.icon = icon;
+    const markerOptions: LeafletNS.MarkerOptions = {
+      draggable: !!m.draggable,
+      icon,
+    };
     const marker = L.marker([m.lat, m.lng], markerOptions);
 
     if (m.popup) marker.bindPopup(m.popup);
@@ -229,9 +239,11 @@ defineExpose({
           iconSize: marker.iconSize,
           iconAnchor: marker.iconAnchor,
         })
-      : undefined;
-    const opts: LeafletNS.MarkerOptions = { draggable: !!marker.draggable };
-    if (icon) opts.icon = icon;
+      : defaultMarkerIcon;
+    const opts: LeafletNS.MarkerOptions = {
+      draggable: !!marker.draggable,
+      icon,
+    };
     const m = L.marker([marker.lat, marker.lng], opts);
     if (marker.popup) m.bindPopup(marker.popup);
     m.addTo(markersLayer);
