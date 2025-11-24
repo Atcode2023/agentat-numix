@@ -39,7 +39,7 @@
           </div>
 
           <!-- Enhanced image upload section -->
-          <div class="form-field q-mb-lg">
+          <!-- <div class="form-field q-mb-lg">
             <label class="field-label text-grey-4 text-weight-medium q-mb-sm">
               Imagen del Producto
             </label>
@@ -59,7 +59,6 @@
               </template>
             </q-file>
 
-            <!-- Enhanced image preview with better styling -->
             <div v-if="preview" class="image-preview-container q-mt-md">
               <q-img :src="preview" ratio="1" class="image-preview" />
               <q-btn
@@ -72,7 +71,7 @@
                 @click="clearImage"
               />
             </div>
-          </div>
+          </div> -->
 
           <!-- Enhanced price input -->
           <div class="form-field q-mb-xl">

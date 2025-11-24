@@ -3,11 +3,11 @@ import { handleMessages } from './notify';
 
 export const getDolar = async () => {
   try {
-    const data = await api.get('https://apidolar.atcode.dev/api/dolar/today');
-
-    const dolar = data.data.bcv_today || {};
+    const { data } = await api.get(
+      'https://apidolar.atcode.dev/api/dolar/today'
+    );
+    const dolar = data.bcv || {};
     localStorage.setItem('dolar', JSON.stringify(dolar));
-
     const defaultRate = localStorage.getItem('defaultRate') || 'Tasa BCV';
     return {
       dolar,
