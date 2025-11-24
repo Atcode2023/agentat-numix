@@ -104,7 +104,7 @@ const customMarkerUrl = '/icons/marcador-de-posicion.png';
 const defaultMarkerIcon = L.icon({
   iconUrl: customMarkerUrl,
   iconRetinaUrl: customMarkerUrl,
-  iconSize: [56, 56],
+  iconSize: [35, 35],
   iconAnchor: [28, 56],
   popupAnchor: [0, -48],
 });
@@ -304,5 +304,21 @@ onBeforeUnmount(() => {
 .leaflet-map {
   width: 100%;
   height: 100%;
+}
+:deep(.leaflet-popup-content-wrapper) {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+:deep(.leaflet-popup-content) {
+  margin: 0;
+  line-height: 1;
+}
+:deep(.leaflet-popup-tip) {
+  display: none;
+}
+:deep(.leaflet-popup-close-button) {
+  display: none;
 }
 </style>
