@@ -251,8 +251,6 @@ import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import { Notify } from 'quasar';
 import { useProductsStore, type Product } from 'src/stores/products';
 import ProductFormDialog from 'src/components/ProductFormDialog.vue';
-import { getProductImage } from 'src/services/imageStore';
-import { saveProductImage } from 'src/services/imageStore';
 import { useDolar } from 'src/stores/dolar';
 // import { useSettings } from 'src/stores/settings';
 
@@ -265,7 +263,9 @@ const images = ref<Record<string, string | null | undefined>>({});
 // Track object URLs to revoke them and avoid memory leaks / freezes on mobile
 const objectUrls = new Map<string, string>();
 
-const cart = ref<Array<Product & { quantity: number }>>([]);
+type CartItem = Product & { quantity: number };
+
+const cart = ref<CartItem[]>([]);
 const cartDialog = ref(false);
 const STORAGE_CART = 'products_cart';
 const listDialog = ref(false);
@@ -288,7 +288,55 @@ const effectiveLimit = computed(() => 5);
 
 const highlightId = ref<string | null>(null);
 
+// Local cart persistence can ship corrupted payloads or fail on some Android WebViews,
+// so we sanitize the snapshot before hydrating state again.
+function sanitizeCartEntry(entry: unknown): CartItem | null {
+  if (!entry || typeof entry !== 'object') return null;
+  const candidate = entry as Record<string, unknown>;
+  const id = typeof candidate.id === 'string' ? candidate.id : '';
+  const name = typeof candidate.name === 'string' ? candidate.name : '';
+  if (!id || !name) return null;
+
+  const rawPrice = Number(candidate.price_current);
+  const price = Number.isFinite(rawPrice) ? rawPrice : 0;
+  const rawQty = Number(candidate.quantity);
+  if (!Number.isFinite(rawQty) || rawQty <= 0) return null;
+  const quantity = Math.max(1, Math.floor(rawQty));
+
+  return {
+    id,
+    name,
+    price_current: price,
+    created_at:
+      typeof candidate.created_at === 'string' && candidate.created_at
+        ? candidate.created_at
+        : new Date().toISOString(),
+    quantity,
+  };
+}
+
+function loadCartFromStorage(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_CART);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((entry) => sanitizeCartEntry(entry))
+      .filter((entry): entry is CartItem => entry !== null);
+  } catch (error) {
+    console.warn('No se pudo cargar el carrito, se limpiará el storage', error);
+    try {
+      localStorage.removeItem(STORAGE_CART);
+    } catch {
+      /* ignore */
+    }
+    return [];
+  }
+}
+
 function handleAddToCart(product: Product) {
+  console.log('adding to cart', product);
   addToCart(product);
   // pequeña animación de borde en warning
   highlightId.value = product.id;
@@ -302,7 +350,13 @@ const addToCart = (product: Product) => {
   if (existingItem) {
     existingItem.quantity++;
   } else {
-    cart.value.push({ ...product, quantity: 1 });
+    cart.value.push({
+      id: product.id,
+      name: product.name,
+      price_current: Number(product.price_current) || 0,
+      created_at: product.created_at || new Date().toISOString(),
+      quantity: 1,
+    });
   }
   persistCart();
 };
@@ -442,104 +496,21 @@ const onSaved = () => {
   showForm.value = false;
 };
 
-async function loadImage(p: Product) {
-  if (!p.imageKey) {
-    // Cleanup previous object URL if any
-    const prev = objectUrls.get(p.id);
-    if (prev) {
-      URL.revokeObjectURL(prev);
-      objectUrls.delete(p.id);
-    }
-    images.value[p.id] = null;
-    return;
-  }
-  images.value[p.id] = undefined;
-  try {
-    const data = await getProductImage(p.imageKey);
-    if (typeof data === 'string') {
-      images.value[p.id] = data;
-    } else if (data instanceof Blob) {
-      // Revoke previous if exists
-      const prev = objectUrls.get(p.id);
-      if (prev) {
-        URL.revokeObjectURL(prev);
-        objectUrls.delete(p.id);
-      }
-      const url = URL.createObjectURL(data);
-      objectUrls.set(p.id, url);
-      images.value[p.id] = url;
-    } else {
-      console.warn('[IMG] No data for key', p.imageKey, 'product', p.id);
-      images.value[p.id] = null;
-    }
-  } catch (e) {
-    console.error('[IMG] Error loading image', p.imageKey, e);
-    images.value[p.id] = null;
-  }
-}
-
-function ensureImages() {
-  products.list.forEach((p) => {
-    if (images.value[p.id] === undefined) {
-      loadImage(p);
-    }
-  });
-}
+// function ensureImages() {
+//   products.list.forEach((p) => {
+//     if (images.value[p.id] === undefined) {
+//       loadImage(p);
+//     }
+//   });
+// }
 
 // Migra productos antiguos que aún tengan image_url y no imageKey
-async function migrateLegacyImages() {
-  let changed = false;
-  interface LegacyProduct {
-    image_url?: unknown;
-  }
-  const hasLegacy = (obj: unknown): obj is LegacyProduct =>
-    typeof obj === 'object' && obj !== null && 'image_url' in obj;
-
-  for (const p of products.list) {
-    if (!p.imageKey && hasLegacy(p)) {
-      const legacyVal = p.image_url;
-      if (typeof legacyVal === 'string' && legacyVal.startsWith('data:image')) {
-        try {
-          const key = `img_${p.id}`;
-          await saveProductImage(key, legacyVal);
-          products.update(p.id, { imageKey: key });
-          changed = true;
-        } catch (e) {
-          console.warn('Fallo migrando imagen legacy', e);
-        }
-      }
-    }
-  }
-  if (changed) {
-    // Forzar recarga de imágenes
-    products.list.forEach((p) => {
-      images.value[p.id] = undefined;
-    });
-    ensureImages();
-  }
-}
 
 onMounted(() => {
-  ensureImages();
-  migrateLegacyImages();
-  try {
-    const raw = localStorage.getItem(STORAGE_CART);
-    if (raw) {
-      const arr = JSON.parse(raw);
-      if (Array.isArray(arr)) {
-        cart.value = arr
-          .filter((x) => x && x.id && x.quantity > 0)
-          .map((x) => ({
-            id: x.id,
-            name: x.name,
-            price_current: x.price_current,
-            imageKey: x.imageKey,
-            created_at: x.created_at,
-            quantity: x.quantity,
-          }));
-      }
-    }
-  } catch {}
+  // ensureImages();
+  // migrateLegacyImages();
+  cart.value = loadCartFromStorage();
+  pruneCart();
 });
 
 onUnmounted(() => {
@@ -548,26 +519,32 @@ onUnmounted(() => {
   objectUrls.clear();
 });
 
-watch(
-  () => products.list.map((p) => p.id + (p.imageKey || '')),
-  () => {
-    ensureImages();
-  }
-);
-
 watch(cart, () => pruneCart(), { deep: true });
 
 function pruneCart() {
-  cart.value = cart.value.filter((ci) =>
+  const filtered = cart.value.filter((ci) =>
     products.list.some((p) => p.id === ci.id)
   );
+  if (filtered.length === cart.value.length) {
+    return;
+  }
+  cart.value = filtered;
   persistCart();
 }
 
 function persistCart() {
   try {
-    localStorage.setItem(STORAGE_CART, JSON.stringify(cart.value));
-  } catch {}
+    const snapshot = cart.value.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price_current: Number(item.price_current) || 0,
+      created_at: item.created_at,
+      quantity: item.quantity,
+    }));
+    localStorage.setItem(STORAGE_CART, JSON.stringify(snapshot));
+  } catch (error) {
+    console.error('Error persisting cart to localStorage', error);
+  }
 }
 
 // Provide src for QImg with correct typing (string | undefined)

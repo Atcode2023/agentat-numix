@@ -136,7 +136,6 @@ import { useProductsStore, type Product } from 'src/stores/products';
 interface BaseForm {
   name: string;
   price_current: number | null;
-  imageKey?: string; // clave en IndexedDB
 }
 
 const props = defineProps<{ modelValue: boolean; product: Product | null }>();
@@ -155,7 +154,6 @@ const store = useProductsStore();
 const empty: BaseForm = {
   name: '',
   price_current: null,
-  imageKey: undefined,
 };
 const form = ref<BaseForm>({ ...empty });
 // Campo de texto formateado para el precio (con máscara estilo InputConver)
@@ -166,14 +164,6 @@ const priceFieldRef = ref<{
   resetValidation?: () => void;
 } | null>(null);
 // Estados de imagen declarados aquí para que estén disponibles en watchers
-const originalImageKey = ref<string | undefined>(undefined);
-const pendingImageData = ref<string | null>(null); // base64 temporal
-const imageChanged = ref(false);
-const imageRemoved = ref(false);
-// Refs de archivo/preview antes del watcher (para immediate)
-const file = ref<File | null>(null);
-const preview = ref<string | null>(null);
-
 const isEdit = computed(() => !!props.product);
 
 watch(
@@ -183,17 +173,7 @@ watch(
       form.value = {
         name: p.name,
         price_current: p.price_current,
-        imageKey: p.imageKey,
       };
-      // Reset y precarga de imagen existente
-      originalImageKey.value = p.imageKey;
-      pendingImageData.value = null;
-      imageChanged.value = false;
-      imageRemoved.value = false;
-      preview.value = null;
-      if (p.imageKey) {
-        loadExistingImage(p.imageKey);
-      }
       priceInput.value =
         p.price_current != null ? formatNumber(p.price_current) : '';
       priceTouched.value = false;
@@ -204,11 +184,6 @@ watch(
       priceInput.value = '';
       priceTouched.value = false;
       setTimeout(() => priceFieldRef.value?.resetValidation?.(), 0);
-      originalImageKey.value = undefined;
-      pendingImageData.value = null;
-      imageChanged.value = false;
-      imageRemoved.value = false;
-      preview.value = null;
     }
   },
   { immediate: true }
@@ -282,32 +257,9 @@ const formRef = ref();
 
 const onSubmit = async () => {
   if (!canSave.value) return;
-  let finalImageKey: string | undefined = originalImageKey.value;
-  try {
-    if (imageRemoved.value) {
-      if (originalImageKey.value) {
-        await removeProductImage(originalImageKey.value);
-      }
-      finalImageKey = undefined;
-    } else if (imageChanged.value && pendingImageData.value) {
-      if (originalImageKey.value) {
-        await saveProductImage(originalImageKey.value, pendingImageData.value);
-        finalImageKey = originalImageKey.value;
-      } else {
-        const newKey = `img_${
-          crypto.randomUUID?.() || Math.random().toString(36).slice(2)
-        }`;
-        await saveProductImage(newKey, pendingImageData.value);
-        finalImageKey = newKey;
-      }
-    }
-  } catch (e) {
-    console.warn('[ProductForm] Error guardando imagen', e);
-  }
   const payload = {
     name: form.value.name.trim(),
     price_current: Number(parseFloat(String(form.value.price_current))) || 0,
-    imageKey: finalImageKey,
   };
   let ok = false;
   if (isEdit.value && props.product) {
@@ -317,53 +269,6 @@ const onSubmit = async () => {
   }
   if (ok) emit('saved');
 };
-
-// Imagen
-import {
-  saveProductImage,
-  getProductImage,
-  removeProductImage,
-} from 'src/services/imageStore';
-
-function clearImage() {
-  file.value = null;
-  preview.value = null;
-  pendingImageData.value = null;
-  imageRemoved.value = true;
-  imageChanged.value = false;
-}
-
-async function onFile(f: File | File[] | null) {
-  const picked = Array.isArray(f) ? f[0] : f;
-  if (!picked) {
-    clearImage();
-    return;
-  }
-  // Convertir a base64 limitado (podría optimizarse con canvas)
-  const reader = new FileReader();
-  reader.onload = async () => {
-    const base64 = reader.result as string;
-    pendingImageData.value = base64;
-    preview.value = base64;
-    imageChanged.value = true;
-    imageRemoved.value = false;
-  };
-  reader.readAsDataURL(picked);
-}
-
-async function loadExistingImage(key: string) {
-  try {
-    const data = await getProductImage(key);
-    if (!data) return;
-    if (typeof data === 'string') {
-      preview.value = data;
-    } else if (data instanceof Blob) {
-      preview.value = URL.createObjectURL(data);
-    }
-  } catch (e) {
-    console.warn('[ProductForm] No se pudo cargar la imagen existente', e);
-  }
-}
 </script>
 
 <style scoped>

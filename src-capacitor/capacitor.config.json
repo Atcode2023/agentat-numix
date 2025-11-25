@@ -3,7 +3,7 @@
   "appName": "AtDolar",
   "bundledWebRuntime": false,
   "npmClient": "yarn",
-  "webDir": "www",
+  "webDir": "dist/spa",
   "server": {
     "androidScheme": "https"
   },
